@@ -95,6 +95,13 @@ install_deps() {
   fi
 }
 
+install_cli_tools() {
+  if ! command -v treehouse >/dev/null 2>&1; then
+    echo "Installing treehouse..."
+    curl -fsSL https://kunchenguid.github.io/treehouse/install.sh | sh
+  fi
+}
+
 setup_windows_deps() {
   if ! grep -qi microsoft /proc/version 2>/dev/null || ! command -v wslpath >/dev/null 2>&1; then
     return
@@ -112,6 +119,7 @@ setup_windows_deps() {
 }
 
 install_deps
+install_cli_tools
 
 cd "$DOTFILES_DIR"
 for pkg in "${PACKAGES[@]}"; do
