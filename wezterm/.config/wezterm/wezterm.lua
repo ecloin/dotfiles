@@ -8,4 +8,7 @@ config.window_decorations = "RESIZE"
 config.window_padding = { left = 8, right = 8, top = 8, bottom = 8 }
 config.enable_tab_bar = true
 
+-- Launched from Windows, but the actual work happens in WSL Ubuntu.
+config.default_domain = "WSL:Ubuntu"
+
 return config

@@ -16,7 +16,14 @@ it should stay in sync with the actual configs under `~/dotfiles`.
 
 ## WezTerm
 - Config: `~/dotfiles/wezterm/.config/wezterm/wezterm.lua`
-- (TBD: font, theme, keybindings, tab/pane behavior)
+- Runs as a native Windows GUI app even when launched from/into WSL, so it
+  reads config from `%USERPROFILE%`, not from WSL's `~/.config`. `install.sh`
+  bridges this by setting the Windows env var `WEZTERM_CONFIG_FILE` (via
+  `setx.exe`) to the WSL UNC path of this file — no manual Windows-side setup,
+  no copied/duplicated config.
+- `config.default_domain = "WSL:Ubuntu"` — every new window/tab opens directly
+  into WSL Ubuntu instead of a local Windows shell.
+- (TBD: keybindings, tab/pane behavior)
 
 ## tmux
 - Config: `~/dotfiles/tmux/.tmux.conf`

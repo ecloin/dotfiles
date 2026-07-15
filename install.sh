@@ -51,27 +51,67 @@ setup_windows_keybinds() {
   echo "See keybinds/MAPPING.md for the full convention, including binds to set natively in Discord/OpenWhispr."
 }
 
-install_stow() {
-  if command -v stow >/dev/null 2>&1; then
+setup_windows_wezterm_config() {
+  if ! grep -qi microsoft /proc/version 2>/dev/null || ! command -v wslpath >/dev/null 2>&1; then
     return
   fi
 
-  echo "GNU Stow not found, installing..."
+  local config_path_win
+
+  config_path_win="$(wslpath -w "$DOTFILES_DIR/wezterm/.config/wezterm/wezterm.lua")"
+
+  echo "Pointing native Windows WezTerm at the dotfiles config..."
+  setx.exe WEZTERM_CONFIG_FILE "$config_path_win" >/dev/null
+
+  echo "WEZTERM_CONFIG_FILE set to $config_path_win."
+  echo "Quit and relaunch WezTerm (or log off/on if it doesn't pick it up) to apply."
+}
+
+install_linux_packages() {
+  local pkgs=("$@")
   if command -v apt >/dev/null 2>&1; then
-    sudo apt update && sudo apt install -y stow
+    sudo apt update && sudo apt install -y "${pkgs[@]}"
   elif command -v dnf >/dev/null 2>&1; then
-    sudo dnf install -y stow
+    sudo dnf install -y "${pkgs[@]}"
   elif command -v pacman >/dev/null 2>&1; then
-    sudo pacman -Sy --noconfirm stow
+    sudo pacman -Sy --noconfirm "${pkgs[@]}"
   elif command -v brew >/dev/null 2>&1; then
-    brew install stow
+    brew install "${pkgs[@]}"
   else
-    echo "No supported package manager found; install GNU Stow manually and re-run." >&2
+    echo "No supported package manager found; install manually: ${pkgs[*]}" >&2
     exit 1
   fi
 }
 
-install_stow
+install_deps() {
+  local missing=()
+  command -v stow >/dev/null 2>&1 || missing+=(stow)
+  command -v tmux >/dev/null 2>&1 || missing+=(tmux)
+  command -v nvim >/dev/null 2>&1 || missing+=(neovim)
+
+  if [[ ${#missing[@]} -gt 0 ]]; then
+    echo "Installing missing dependencies: ${missing[*]}..."
+    install_linux_packages "${missing[@]}"
+  fi
+}
+
+setup_windows_deps() {
+  if ! grep -qi microsoft /proc/version 2>/dev/null || ! command -v wslpath >/dev/null 2>&1; then
+    return
+  fi
+
+  if ! cmd.exe /c "where wezterm" >/dev/null 2>&1; then
+    echo "WezTerm not found on Windows, installing via winget..."
+    winget.exe install --id wez.wezterm --exact --silent \
+      --accept-package-agreements --accept-source-agreements
+  fi
+
+  echo "Note: JetBrains Mono isn't in winget's font catalog on this machine (checked both the"
+  echo "default and winget-font sources) - install it manually if wezterm.lua's font isn't rendering:"
+  echo "  https://www.jetbrains.com/lp/mono/"
+}
+
+install_deps
 
 cd "$DOTFILES_DIR"
 for pkg in "${PACKAGES[@]}"; do
@@ -79,6 +119,8 @@ for pkg in "${PACKAGES[@]}"; do
   stow --restow --target="$HOME" -v "$pkg"
 done
 
+setup_windows_deps
 setup_windows_keybinds
+setup_windows_wezterm_config
 
 echo "Done. Restart your shell / reload tmux and neovim configs."
