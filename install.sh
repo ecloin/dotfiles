@@ -22,8 +22,11 @@ setup_windows_keybinds() {
   ahk_exe="/mnt/c/Users/$win_user/AppData/Local/Programs/AutoHotkey/v2/AutoHotkey64.exe"
   if [[ ! -f "$ahk_exe" ]]; then
     echo "AutoHotkey v2 not found, installing via winget..."
-    winget.exe install --id AutoHotkey.AutoHotkey --exact --silent \
-      --accept-package-agreements --accept-source-agreements
+    # --disable-interactivity so winget never blocks on a prompt, and a
+    # timeout so a stalled interop session can't wedge the whole install.
+    timeout 300 winget.exe install --id AutoHotkey.AutoHotkey --exact --silent \
+      --accept-package-agreements --accept-source-agreements --disable-interactivity \
+      || echo "winget install of AutoHotkey timed out or failed; install v2 manually if keybinds don't work." >&2
   fi
 
   if [[ ! -f "$ahk_exe" ]]; then
@@ -40,12 +43,14 @@ setup_windows_keybinds() {
     \$sc = \$ws.CreateShortcut('$(wslpath -w "$shortcut")')
     \$sc.TargetPath = '$(wslpath -w "$ahk_exe")'
     \$sc.Arguments = '\"$ahk_script\"'
-    \$sc.WorkingDirectory = '$(dirname "$(wslpath -w "$ahk_exe")")'
+    \$sc.WorkingDirectory = '$(wslpath -w "$(dirname "$ahk_exe")")'
     \$sc.Save()
   " >/dev/null
 
   echo "Starting Keybinds.ahk for this session..."
-  cmd.exe /c start "" "$(wslpath -w "$ahk_exe")" "$ahk_script" >/dev/null 2>&1 || true
+  # An AHK script is a persistent tray process that never exits. Fully detach
+  # it (subshell + closed stdin) so it can't hold this call open under WSL interop.
+  ( cmd.exe /c start "" "$(wslpath -w "$ahk_exe")" "$ahk_script" </dev/null >/dev/null 2>&1 & )
 
   echo "AutoHotkey keybinds active (RAlt+O/C/W to switch apps, RAlt+R to reload after edits)."
   echo "See keybinds/MAPPING.md for the full convention, including binds to set natively in Discord/OpenWhispr."
@@ -135,8 +140,9 @@ setup_windows_deps() {
 
   if ! cmd.exe /c "where wezterm" >/dev/null 2>&1; then
     echo "WezTerm not found on Windows, installing via winget..."
-    winget.exe install --id wez.wezterm --exact --silent \
-      --accept-package-agreements --accept-source-agreements
+    timeout 300 winget.exe install --id wez.wezterm --exact --silent \
+      --accept-package-agreements --accept-source-agreements --disable-interactivity \
+      || echo "winget install of WezTerm timed out or failed; install it manually." >&2
   fi
 
   echo "Note: JetBrains Mono isn't in winget's font catalog on this machine (checked both the"
