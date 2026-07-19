@@ -95,10 +95,36 @@ install_deps() {
   fi
 }
 
+# On WSL, PATH inherits Windows entries (/mnt/c/...); if node/npx only resolve
+# there, they run as Windows processes and write to the Windows filesystem
+# instead of WSL's $HOME. Node is managed via nvm rather than the system package
+# manager so version upgrades don't need sudo.
+install_node() {
+  export NVM_DIR="$HOME/.nvm"
+
+  if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
+    echo "Installing nvm..."
+    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+  fi
+
+  # shellcheck disable=SC1091
+  source "$NVM_DIR/nvm.sh"
+
+  if [[ "$(command -v node 2>/dev/null)" != "$NVM_DIR"/* ]]; then
+    echo "Installing latest Node.js via nvm..."
+    nvm install node
+  fi
+}
+
 install_cli_tools() {
   if ! command -v treehouse >/dev/null 2>&1; then
     echo "Installing treehouse..."
     curl -fsSL https://kunchenguid.github.io/treehouse/install.sh | sh
+  fi
+
+  if [[ ! -d "$HOME/.agents/skills/lavish" ]]; then
+    echo "Installing lavish skill..."
+    npx -y skills add kunchenguid/lavish-axi --skill lavish -g -y
   fi
 }
 
@@ -119,6 +145,7 @@ setup_windows_deps() {
 }
 
 install_deps
+install_node
 install_cli_tools
 
 cd "$DOTFILES_DIR"
