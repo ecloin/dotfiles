@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(wezterm tmux nvim claude)
+PACKAGES=(wezterm nvim claude)
 
 setup_windows_keybinds() {
   if ! grep -qi microsoft /proc/version 2>/dev/null || ! command -v wslpath >/dev/null 2>&1; then
@@ -91,7 +91,6 @@ install_linux_packages() {
 install_deps() {
   local missing=()
   command -v stow >/dev/null 2>&1 || missing+=(stow)
-  command -v tmux >/dev/null 2>&1 || missing+=(tmux)
   command -v nvim >/dev/null 2>&1 || missing+=(neovim)
 
   if [[ ${#missing[@]} -gt 0 ]]; then
@@ -125,6 +124,11 @@ install_cli_tools() {
   if ! command -v treehouse >/dev/null 2>&1; then
     echo "Installing treehouse..."
     curl -fsSL https://kunchenguid.github.io/treehouse/install.sh | sh
+  fi
+
+  if ! command -v herdr >/dev/null 2>&1; then
+    echo "Installing herdr..."
+    curl -fsSL https://herdr.dev/install.sh | sh
   fi
 
   if [[ ! -d "$HOME/.agents/skills/lavish" ]]; then
@@ -164,4 +168,4 @@ setup_windows_deps
 setup_windows_keybinds
 setup_windows_wezterm_config
 
-echo "Done. Restart your shell / reload tmux and neovim configs."
+echo "Done. Restart your shell / reload your neovim config."
