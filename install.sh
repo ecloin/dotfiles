@@ -131,6 +131,13 @@ install_cli_tools() {
     curl -fsSL https://herdr.dev/install.sh | sh
   fi
 
+  # Review-first diff viewer for agent-authored changesets. npm package name is
+  # hunkdiff; the binary it installs is `hunk`.
+  if ! command -v hunk >/dev/null 2>&1; then
+    echo "Installing hunk..."
+    npm install -g hunkdiff
+  fi
+
   if [[ ! -d "$HOME/.agents/skills/lavish" ]]; then
     echo "Installing lavish skill..."
     npx -y skills add kunchenguid/lavish-axi --skill lavish -g -y

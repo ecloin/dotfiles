@@ -3,3 +3,9 @@
 *.swo
 *~
 /.claude/
+
+# herdr writes logs and live session state next to its config, which stow
+# symlinks into ~/.config/herdr. Needs ** — the files sit at
+# herdr/.config/herdr/, so a single-level herdr/*.log never matches them.
+herdr/**/*.log
+herdr/**/session.json
