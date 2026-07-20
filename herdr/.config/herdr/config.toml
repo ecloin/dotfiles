@@ -1,0 +1,12 @@
+[keys]
+prefix = "ctrl+a"
+navigate_pane_left = "alt+left"
+navigate_pane_right = "alt+right"
+navigate_pane_up = "alt+up"
+navigate_pane_down = "alt+down"
+
+[ui.toast]
+delivery = "system"
+
+[ui]
+show_agent_labels_on_pane_borders = true

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(wezterm nvim claude)
+PACKAGES=(wezterm nvim claude herdr)
 
 setup_windows_keybinds() {
   if ! grep -qi microsoft /proc/version 2>/dev/null || ! command -v wslpath >/dev/null 2>&1; then
@@ -99,6 +99,21 @@ install_deps() {
   fi
 }
 
+# nvm's own installer picks a profile to edit (~/.bashrc vs ~/.zshrc) by
+# checking $BASH_VERSION/$ZSH_VERSION of the process running it - and since
+# this script always executes under bash, it always writes to a bash profile
+# even if the user's actual shell is zsh. PROFILE=/dev/null skips that
+# self-mutation entirely; we append the sourcing snippet to every known
+# shell profile ourselves so nvm works regardless of which shell is active.
+ensure_nvm_sourced_in() {
+  local profile="$1"
+  touch "$profile"
+  if ! grep -q 'NVM_DIR' "$profile" 2>/dev/null; then
+    echo "Adding nvm init to $(basename "$profile")..."
+    printf '\nexport NVM_DIR="$HOME/.nvm"\n[ -s "$NVM_DIR/nvm.sh" ] && \\. "$NVM_DIR/nvm.sh"\n' >> "$profile"
+  fi
+}
+
 # On WSL, PATH inherits Windows entries (/mnt/c/...); if node/npx only resolve
 # there, they run as Windows processes and write to the Windows filesystem
 # instead of WSL's $HOME. Node is managed via nvm rather than the system package
@@ -108,8 +123,11 @@ install_node() {
 
   if [[ ! -s "$NVM_DIR/nvm.sh" ]]; then
     echo "Installing nvm..."
-    curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+    PROFILE=/dev/null curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
   fi
+
+  ensure_nvm_sourced_in "$HOME/.bashrc"
+  ensure_nvm_sourced_in "$HOME/.zshrc"
 
   # shellcheck disable=SC1091
   source "$NVM_DIR/nvm.sh"
