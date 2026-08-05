@@ -92,6 +92,9 @@ install_deps() {
   local missing=()
   command -v stow >/dev/null 2>&1 || missing+=(stow)
   command -v nvim >/dev/null 2>&1 || missing+=(neovim)
+  # jq parses the session JSON in claude-config's scripts/statusline.sh; without
+  # it the status line falls back to a bare directory name.
+  command -v jq >/dev/null 2>&1 || missing+=(jq)
 
   if [[ ${#missing[@]} -gt 0 ]]; then
     echo "Installing missing dependencies: ${missing[*]}..."
