@@ -18,7 +18,7 @@ local config = wezterm.config_builder()
 
 -- Trial 2026-10-15: rose-pine-dawn for link readability; previous: "Tokyo Night".
 config.color_scheme = "rose-pine-dawn"
-config.font = wezterm.font("JetBrains Mono")
+config.font = wezterm.font("CommitMono")
 config.font_size = 12.0
 config.window_decorations = "RESIZE"
 config.window_padding = { left = 8, right = 8, top = 8, bottom = 8 }
@@ -30,9 +30,19 @@ config.window_frame = {
   inactive_titlebar_bg = "#f2e9e1",
 }
 config.colors = {
+  background = "#f6efe6",
+  foreground = "#4a3b33",
+  cursor_bg = "#4a3b33",
+  cursor_border = "#4a3b33",
+  cursor_fg = "#f6efe6",
+  selection_bg = "#d6e0e6",
+  selection_fg = "#4a3b33",
+  -- black, red, green, yellow, blue, magenta, cyan, white
+  ansi    = { "#4a3b33", "#a3354f", "#2f7a3c", "#8a6100", "#1b5e8f", "#7a4f8f", "#1d6f73", "#e5ddd4" },
+  brights = { "#9893a5", "#a04a1b", "#2f7a3c", "#8a6100", "#1b5e8f", "#7a4f8f", "#1d6f73", "#eae2d9" },
   tab_bar = {
     inactive_tab_edge = "#dfdad9",
-    active_tab = { bg_color = "#faf4ed", fg_color = "#575279" },
+    active_tab = { bg_color = "#f6efe6", fg_color = "#4a3b33" },
     inactive_tab = { bg_color = "#f2e9e1", fg_color = "#797593" },
     inactive_tab_hover = { bg_color = "#dfdad9", fg_color = "#575279" },
     new_tab = { bg_color = "#f2e9e1", fg_color = "#797593" },
