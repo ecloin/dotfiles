@@ -17,6 +17,7 @@ treehouse status                   # see what's checked out where
 ```
 
 Run each agent in its own [herdr](https://herdr.dev) pane.
+After any herdr config change, run `install.sh` (or `install.ps1`) to regenerate the native Windows copy.
 
 ### 2. Review before it lands
 
