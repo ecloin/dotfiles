@@ -1,3 +1,4 @@
+onboarding = false
 [keys]
 prefix = "ctrl+a"
 navigate_pane_left = "alt+left"
@@ -20,3 +21,7 @@ claude = [["state_icon", "workspace", "$ctx"], ["terminal_title_stripped"], ["ag
 
 [ui.sidebar.spaces]
 rows = [["state_icon", "workspace"], ["branch", "git_status"], ["$trees"]]
+
+# Light theme to match WezTerm rose-pine-dawn (2026-10-15).
+[theme]
+name = "rose-pine-dawn"
