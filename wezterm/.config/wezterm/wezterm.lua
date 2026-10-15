@@ -16,12 +16,29 @@
 local wezterm = require("wezterm")
 local config = wezterm.config_builder()
 
-config.color_scheme = "Tokyo Night"
+-- Trial 2026-10-15: rose-pine-dawn for link readability; previous: "Tokyo Night".
+config.color_scheme = "rose-pine-dawn"
 config.font = wezterm.font("JetBrains Mono")
 config.font_size = 12.0
 config.window_decorations = "RESIZE"
 config.window_padding = { left = 8, right = 8, top = 8, bottom = 8 }
 config.enable_tab_bar = true
+
+-- Tab bar in Rose Pine Dawn so the window frame matches the light theme (2026-10-15).
+config.window_frame = {
+  active_titlebar_bg = "#f2e9e1",
+  inactive_titlebar_bg = "#f2e9e1",
+}
+config.colors = {
+  tab_bar = {
+    inactive_tab_edge = "#dfdad9",
+    active_tab = { bg_color = "#faf4ed", fg_color = "#575279" },
+    inactive_tab = { bg_color = "#f2e9e1", fg_color = "#797593" },
+    inactive_tab_hover = { bg_color = "#dfdad9", fg_color = "#575279" },
+    new_tab = { bg_color = "#f2e9e1", fg_color = "#797593" },
+    new_tab_hover = { bg_color = "#dfdad9", fg_color = "#575279" },
+  },
+}
 
 -- Render cost: added 2026-08-17 after wezterm-gui measured at 39.5% of one core
 -- while completely IDLE (8s sample, nothing streaming; 942s cumulative CPU, the
