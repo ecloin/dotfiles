@@ -1,0 +1,9 @@
+
+# ---- Windows-only tail, appended by install.ps1 ------------------------------
+# Everything above this line is herdr/.config/herdr/config.toml verbatim, so
+# the prefix, pane navigation and sidebar rows are byte-identical to WSL.
+# Only this [terminal] table differs per platform: native herdr has no $SHELL
+# to fall back on and would otherwise spawn cmd.exe.
+
+[terminal]
+default_shell = "C:\\Program Files\\Git\\bin\\bash.exe"

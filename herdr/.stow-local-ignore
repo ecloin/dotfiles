@@ -1,0 +1,2 @@
+# windows/ is read by install.ps1 from this checkout, never stowed into $HOME.
+^/windows$

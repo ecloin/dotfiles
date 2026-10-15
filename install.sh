@@ -72,6 +72,19 @@ setup_windows_wezterm_config() {
   echo "Quit and relaunch WezTerm (or log off/on if it doesn't pick it up) to apply."
 }
 
+setup_windows_herdr_config() {
+  if ! grep -qi microsoft /proc/version 2>/dev/null || ! command -v wslpath >/dev/null 2>&1; then
+    return
+  fi
+
+  echo "Generating native Windows herdr config from this checkout..."
+  # install.ps1 reads its sources via $PSScriptRoot, so running it from this
+  # path keeps Windows herdr byte-identical to WSL's. powershell.exe warns on a
+  # UNC cwd, hence the /mnt/c subshell.
+  ( cd /mnt/c && powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(wslpath -w "$DOTFILES_DIR/install.ps1")" ) \
+    || echo "install.ps1 failed; Windows herdr config not regenerated." >&2
+}
+
 install_linux_packages() {
   local pkgs=("$@")
   if command -v apt >/dev/null 2>&1; then
@@ -195,5 +208,6 @@ done
 setup_windows_deps
 setup_windows_keybinds
 setup_windows_wezterm_config
+setup_windows_herdr_config
 
 echo "Done. Restart your shell / reload your neovim config."
