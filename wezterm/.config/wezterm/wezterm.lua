@@ -103,6 +103,15 @@ config.mouse_bindings = {
 -- Make URLs (and OSC 8 hyperlinks) clickable using the built-in rule set.
 config.hyperlink_rules = wezterm.default_hyperlink_rules()
 
+-- The built-in set only knows web-style schemes, so Obsidian vault links
+-- (obsidian://open?vault=...&file=...) printed by agents stay plain text.
+-- Match them too; trailing sentence punctuation and closing brackets are left
+-- off so a link at the end of a sentence still opens.
+table.insert(config.hyperlink_rules, {
+	regex = [==[\bobsidian://[^\s<>"'`]*[^\s<>"'`.,;:!?)\]]]==],
+	format = "$0",
+})
+
 -- Launched from Windows, but the actual work happens in WSL Ubuntu.
 --
 -- WezTerm auto-generates a 'WSL:Ubuntu-24.04' domain, but that auto domain
